@@ -1,0 +1,4 @@
+> O usuário deve ter python 3.10.5 no computador, bem como o pacote GraphViz, encontrado em https://graphviz.org/download/
+> Qualquer input deve ser colocado no arquivo Entradas_Formatadas_MatheusSabadin_GiuliaStefainski_EduardaWaechter.txt
+> Para rodar o programa, basta clicar duas vezes no executável
+> Como output, serão geradas imagens do autômato

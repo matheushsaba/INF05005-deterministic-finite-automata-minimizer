@@ -1,0 +1,13 @@
+Aceitas:
+abc
+arwc
+arabrbc
+wc
+wrabrbc
+
+Rejeitadas:
+bc
+arbc
+wabc
+cwarb
+abcr
