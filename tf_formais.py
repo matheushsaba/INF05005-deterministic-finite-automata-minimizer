@@ -22,7 +22,7 @@ def main():
     
     print("A linguagem fornecida não é vazia")
 
-
+    automata.abuble()
     
     #automata.removeUnreachableStates()
     #automata.printAutomata("p2")
@@ -473,22 +473,64 @@ class FiniteAutomata:
         
         return pairs
 
-    def areTwoStatesEquivalent(self, firstState, secondState):              # Verifica se dois estados são equivalentes
-        if firstState.isInitialState or secondState.isInitialState:
-            return False
-        
-        if firstState.isFinalState != secondState.isFinalState:
-            return False
-
-        # Pegar todas as palavras geradas pelo primeiro estado
-        # Pegar todas palavras geradas pelo segundo estado
-        # Se os dois conjuntos forem diferentes, retornar false
-        # Se os dois conjuntos forem iguais, retornar true
-        return True
+    
     
     def getAllWordsBetweenTwoStates(self, initialState, finalStates):
         pass
     
+    def abuble(self):
+        finalStates = self.getFinalStates()
+        nonFinalStates = self.getNonFinalStates()
+        finalStatesPairs = list(itertools.combinations(finalStates, 2))
+        nonFinalStatesPairs = list(itertools.combinations(nonFinalStates, 2))
+
+        equivalentFinalStatePairs = []
+        nonEquivalentFinalStatePairs = []
+
+        for finalStatesPair in finalStatesPairs:
+            if self.areTwoStatesEquivalent(finalStatesPair[0], finalStatesPair[1], nonFinalStates, finalStates):
+                equivalentFinalStatePairs.append(finalStatesPair)
+
+        for nonFinalStatesPair in nonFinalStatesPairs:
+            if self.areTwoStatesEquivalent(nonFinalStatesPair[0], nonFinalStatesPair[1], nonFinalStates, finalStates):
+                nonEquivalentFinalStatePairs.append(nonFinalStatesPair)
+
+        pass
+
+    def getFinalStates(self):
+        finalStates = []
+        for finalStateName in self.finalStateNames:
+            finalStates.append(self.statesDictionary[finalStateName])
+
+        return finalStates
+
+    def getNonFinalStates(self):
+        nonFinalStatesNames = set(self.statesNames).difference(set(self.finalStateNames))
+        nonFinalStates = []
+        for nonFinalStatesName in nonFinalStatesNames:
+            nonFinalStates.append(self.statesDictionary[nonFinalStatesName])
+
+        return nonFinalStates
+
+    def areTwoStatesEquivalent(self, firstState, secondState, nonFinalStates, finalStates):              # Verifica se dois estados são equivalentes
+        for firstStateTransition in firstState.transitionsPointingOut:
+            for firstStateTransitionSymbol in firstStateTransition.acceptedSymbols:
+                for secondStateTransition in secondState.transitionsPointingOut:
+                    for secondStateTransitionSymbol in secondStateTransition.acceptedSymbols:
+                        if firstStateTransitionSymbol == secondStateTransitionSymbol:
+                            statePointedByFirstTransition = firstStateTransition.pointsTo
+                            statePointedBySecondTransition = secondStateTransition.pointsTo
+
+                            if not ((statePointedByFirstTransition in nonFinalStates) and (statePointedBySecondTransition in nonFinalStates)) or ((statePointedByFirstTransition in finalStates) and (statePointedBySecondTransition in finalStates)):
+                                return False
+
+        return True
+
+
+
+        
+        
+
 
     #Verifica um input de palavras
     def checkAcceptanceOfInputWords(self, wordsFileName):                   # Checa a aceitação de um input em .txt
