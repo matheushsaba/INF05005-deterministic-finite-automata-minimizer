@@ -4,25 +4,28 @@ import pathlib
 
 #Função principal
 def main():
-    print("Digite o nome do arquivo de entrada sem sua extensão:")
+    # Lê o arquivo de entrada com a linguagem
+    print("Digite o nome do arquivo de entrada da linguagem sem sua extensão:")
     #languageFileName = input()
     languageFileName = "Entradas_Formatadas_MatheusSabadin_GiuliaStefainski_EduardaWaechter"    # Nome da entrada
     inputLines = readTxtFile(languageFileName)                                                  # Linhas do .txt da entrada
     translatedInput = InputTranslation(inputLines)                                  # Classe com todas informações do input
 
+    # Cria o autômato e printa uma imagem dele
     automata = FiniteAutomata(translatedInput)                                      # Classe de autômato finito
     #automata.printAutomata("p1")
 
+    # Checa se a linguagem é vazia
+    if automata.isLanguageEmpty():
+        print("A linguagem fornecida é vazia")
+        return
+    
+    print("A linguagem fornecida não é vazia")
+
+
+    
     #automata.removeUnreachableStates()
     #automata.printAutomata("p2")
-
-    initialState = automata.statesDictionary[automata.initialStateName]
-    finalStates = []
-
-    for finalStateName in automata.finalStateNames:
-        finalStates.append(automata.statesDictionary[finalStateName])
-
-    finalState = finalStates[0]
 
     #automata.printAllPaths(initialState, finalState)
     #automata.getEquivalentPairs()
@@ -30,6 +33,10 @@ def main():
     #automata.createTotalFunctionIfNot()
     #automata.printAutomata("p3")
 
+
+
+    # Checa as palavras de um input em .txt
+    print("Digite o nome do arquivo de entrada das palavras sem sua extensão:")
     #wordsFileName = input()
     wordsFileName = "Palavras_MatheusSabadin_GiuliaStefainski_EduardaWaechter"
     automata.checkAcceptanceOfInputWords(wordsFileName)
@@ -278,6 +285,19 @@ class FiniteAutomata:
 
         return dfa
     
+    # Verifica se existe um caminho entre o estado inicial e o estado final
+    def isLanguageEmpty(self):
+        initialState = self.statesDictionary[self.initialStateName]
+        visitedStatesFromInitial = set()
+        self.getReachableStatesRecursion(initialState, visitedStatesFromInitial)
+
+        for stateName in visitedStatesFromInitial:
+            state = self.statesDictionary[stateName]
+
+            if state.isFinalState:
+                return False
+
+        return True
 
     #Minimização do autômato
     def minimize(self):
