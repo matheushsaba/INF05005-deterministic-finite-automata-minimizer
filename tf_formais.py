@@ -4,8 +4,10 @@ import pathlib
 
 #Função principal
 def main():
-    name = "Entradas_Formatadas_MatheusSabadin_GiuliaStefainski_EduardaWaechter"    # Nome da entrada
-    inputLines = readTxtFile(name)                                                  # Linhas do .txt da entrada
+    print("Digite o nome do arquivo de entrada sem sua extensão:")
+    #languageFileName = input()
+    languageFileName = "Entradas_Formatadas_MatheusSabadin_GiuliaStefainski_EduardaWaechter"    # Nome da entrada
+    inputLines = readTxtFile(languageFileName)                                                  # Linhas do .txt da entrada
     translatedInput = InputTranslation(inputLines)                                  # Classe com todas informações do input
 
     automata = FiniteAutomata(translatedInput)                                      # Classe de autômato finito
@@ -27,17 +29,16 @@ def main():
 
     automata.createTotalFunctionIfNot()
     automata.printAutomata("p3")
-    
 
+    #wordsFileName = input()
+    wordsFileName = "Palavras_MatheusSabadin_GiuliaStefainski_EduardaWaechter"
+    automata.checkIfWordIsAccepted(wordsFileName)
 
 def readTxtFile(name):
     with open(name + ".txt") as input:
         inputLines = input.readlines()
 
     return inputLines
-
-
-
 
 class InputTranslation:                                     # Classe que traduz o input para dados do programa
     def __init__(self, inputLines):
@@ -177,7 +178,7 @@ class State:                                                # Classe de estado
     def __eq__(self, other):                                # Verifica a igualdade entre dois estados pelo nome
         return self.name == other.name
 
-class Transition:                                                                   # Classe de transição
+class Transition:                                           # Classe de transição
     def __init__(self, transitionData, statesDictionary):
         fromState = statesDictionary[transitionData[0]]
         fromState.transitionsPointingOut.append(self)
@@ -349,11 +350,8 @@ class FiniteAutomata:
         return unreachableStateNames
 
     def getReachableStateNamesSet(self, initialState, finalStates):         # Verifica através de uma recursão DFS quais são os estados úteis
-        # create a set to store all visited vertices
         visitedStatesFromInitial = set()
         visitedStatesFromFinalStates = set()
-        # Call the recursive helper function
-        # to print DFS traversal
         self.getReachableStatesRecursion(initialState, visitedStatesFromInitial)
 
         for finalState in finalStates:
@@ -471,4 +469,46 @@ class FiniteAutomata:
     def getAllWordsBetweenTwoStates(self, initialState, finalStates):
         pass
     
+    #Verifica um input de palavras
+    def checkAcceptanceOfInputWords(self, wordsFileName):
+        inputLines = readTxtFile(wordsFileName)
+        words = self.getWordsToTest(inputLines)
+        acceptedAndRejectedList = []
+
+        for i, word in enumerate(words):
+            wordsAndStatus = []
+            if self.isWordIsAccepted(word):
+                wordAndStatus = [word, "ACCEPTED"]
+            else:
+                wordAndStatus = [word, "REJECTED"]
+
+            acceptedAndRejectedList.append(wordAndStatus)
+
+        #Terminar
+        pass
+
+    def getWordsToTest(self, inputLines):
+        words = []
+
+        for line in inputLines:
+            word = []
+            for letter in line.strip():
+                word.append(letter)
+            
+            words.append(word)
+
+        return words
+    
+    def isWordIsAccepted(self, word):
+        initialState = self.statesDictionary[self.initialStateName]
+
+        pass
+
+    def isLetterAccepted(self, letter):
+    
+
+        pass
+
+
+
 main()
