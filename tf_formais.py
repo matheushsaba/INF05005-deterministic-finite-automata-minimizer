@@ -11,9 +11,9 @@ def main():
     translatedInput = InputTranslation(inputLines)                                  # Classe com todas informações do input
 
     automata = FiniteAutomata(translatedInput)                                      # Classe de autômato finito
-    automata.printAutomata("p1")
+    #automata.printAutomata("p1")
 
-    automata.removeUnreachableStates()
+    #automata.removeUnreachableStates()
     #automata.printAutomata("p2")
 
     initialState = automata.statesDictionary[automata.initialStateName]
@@ -27,12 +27,12 @@ def main():
     #automata.printAllPaths(initialState, finalState)
     #automata.getEquivalentPairs()
 
-    automata.createTotalFunctionIfNot()
-    automata.printAutomata("p3")
+    #automata.createTotalFunctionIfNot()
+    #automata.printAutomata("p3")
 
     #wordsFileName = input()
     wordsFileName = "Palavras_MatheusSabadin_GiuliaStefainski_EduardaWaechter"
-    automata.checkIfWordIsAccepted(wordsFileName)
+    automata.checkAcceptanceOfInputWords(wordsFileName)
 
 def readTxtFile(name):
     with open(name + ".txt") as input:
@@ -469,8 +469,9 @@ class FiniteAutomata:
     def getAllWordsBetweenTwoStates(self, initialState, finalStates):
         pass
     
+
     #Verifica um input de palavras
-    def checkAcceptanceOfInputWords(self, wordsFileName):
+    def checkAcceptanceOfInputWords(self, wordsFileName):                   # Checa a aceitação de um input em .txt
         inputLines = readTxtFile(wordsFileName)
         words = self.getWordsToTest(inputLines)
         acceptedAndRejectedList = []
@@ -484,10 +485,11 @@ class FiniteAutomata:
 
             acceptedAndRejectedList.append(wordAndStatus)
 
-        #Terminar
-        pass
+        self.writeOutputOnConsole(acceptedAndRejectedList)
 
-    def getWordsToTest(self, inputLines):
+        return acceptedAndRejectedList
+
+    def getWordsToTest(self, inputLines):                                   # Pega as palavras do .txt
         words = []
 
         for line in inputLines:
@@ -499,16 +501,31 @@ class FiniteAutomata:
 
         return words
     
-    def isWordIsAccepted(self, word):
+    def isWordIsAccepted(self, word):                                       # Verifica se uma palavra é aceita
         initialState = self.statesDictionary[self.initialStateName]
+        actualState = initialState
 
-        pass
+        for letter in word:
+            if len(actualState.transitionsPointingOut) == 0:
+                return False
 
-    def isLetterAccepted(self, letter):
-    
+            for i, transition in enumerate(actualState.transitionsPointingOut):
+                if letter in transition.acceptedSymbols:
+                    actualState = transition.pointsTo
+                    break
+                
+                if i == len(actualState.transitionsPointingOut) - 1:
+                    return False
 
-        pass
+        if not actualState.isFinalState:
+            return False
 
+        return True
+
+    def writeOutputOnConsole(self, acceptedAndRejectedList):                # Escreve o resultado das verificações no console
+        for acceptedAndRejected in acceptedAndRejectedList:
+            outputString = "".join(acceptedAndRejected[0]) + "  -->  " + acceptedAndRejected[1]
+            print(outputString)
 
 
 main()
