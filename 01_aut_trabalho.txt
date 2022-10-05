@@ -1,0 +1,14 @@
+Urna
+S: q0,q1,q2,q3,q4
+A: a,b,c,w,r
+i: q0
+F: q4
+
+(q0,a,q1)
+(q1,r,q0)
+(q0,w,q3)
+(q3,r,q0)
+(q1,b,q2)
+(q2,r,q1)
+(q3,c,q4)
+(q2,c,q4)

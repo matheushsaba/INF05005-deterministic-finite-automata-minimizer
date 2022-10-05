@@ -5,41 +5,79 @@ import pathlib
 #Função principal
 def main():
     # Lê o arquivo de entrada com a linguagem
-    print("Digite o nome do arquivo de entrada da linguagem sem sua extensão:")
-    #languageFileName = input()
-    languageFileName = "Entradas_Formatadas_MatheusSabadin_GiuliaStefainski_EduardaWaechter"    # Nome da entrada
-    inputLines = readTxtFile(languageFileName)                                                  # Linhas do .txt da entrada
+    print("Digite o nome do arquivo de entrada da linguagem sem sua extensão:\n")
+    languageFileName = input()
+    #languageFileName = "00_aut_trabalho"    # Nome da entrada
+    
+    #=========================================================
+    # CONVERSÃO DO INPUT EM .TXT
+    #=========================================================
+    # Traduz o input para uma classe
+    inputLines = readTxtFile(languageFileName)                                      # Linhas do .txt da entrada
     translatedInput = InputTranslation(inputLines)                                  # Classe com todas informações do input
 
     # Cria o autômato e printa uma imagem dele
     automata = FiniteAutomata(translatedInput)                                      # Classe de autômato finito
-    #automata.printAutomata("p1")
-
-    # Checa se a linguagem é vazia
+    automata.printAutomata("00 - autômato fornecido")
+    #=========================================================
+    # CHECAGEM DE LINGUAGEM VAZIA
+    #=========================================================
     if automata.isLanguageEmpty():
-        print("A linguagem fornecida é vazia")
+        print("A linguagem fornecida é vazia\n")
         return
     
-    print("A linguagem fornecida não é vazia")
+    print("A linguagem fornecida não é vazia\n")
+    #=========================================================
+    print("\nVocê deseja remover os estados inalcançáveis? [s/n]:")
+    removeUnreachableStates = input()
 
-    automata.abuble()
-    
-    #automata.removeUnreachableStates()
-    #automata.printAutomata("p2")
+    if removeUnreachableStates == "s":
+        automata.removeUnreachableStates()
+        automata.printAutomata("02 - autômato sem estados inúteis")
+    #=========================================================
+    print("\nVocê deseja criar uma função total? [s/n]:")
+    createTotalFunction = input()
 
-    #automata.printAllPaths(initialState, finalState)
-    #automata.getEquivalentPairs()
+    if createTotalFunction == "s":
+        automata.createTotalFunctionIfNot()
+        automata.printAutomata("03 - autômato com função total")
+    #=========================================================
+    # COMEÇO DA MINIMIZAÇÃO
+    #=========================================================
+    print("\nVocê deseja fazer a equivalência entre estados? [s/n]:")
+    makeEquivalence = input()
 
-    #automata.createTotalFunctionIfNot()
-    #automata.printAutomata("p3")
+    if makeEquivalence == "s":
+        automata.verifyEquivalenceBetweenPairs()
+    #=========================================================
+    print("\nVocê deseja criar agrupar dois estados equivalentes? [s/n]:")
+    grouptTwoStates = input()
 
+    if grouptTwoStates == "s":
+        print("Digite o nome dos dois estados separados por uma vírgula:\n")
+        statesNames = input().split(",")
+        automata.unifyTwoStates(automata.statesDictionary[statesNames[0]], automata.statesDictionary[statesNames[1]])
+        #automata.verifyEquivalenceBetweenPairs()
+        automata.printAutomata("04 - autômato com estados equivalentes agrupados")
+    #=========================================================
+    print("\nVocê deseja remover os estados inalcançáveis novamente? [s/n]:")
+    removeUnreachableStatesAgain = input()
 
+    if removeUnreachableStatesAgain == "s":
+        automata.removeUnreachableStates()
+        automata.printAutomata("05 - autômato sem minimizado")
+    #=========================================================
+    # CHECAGEM DE INPUT DE PALAVRAS
+    #=========================================================
+    print("Você deseja checar uma lista de palavras? [s/n]:\n")
+    checkWords = input()
 
-    # Checa as palavras de um input em .txt
-    print("Digite o nome do arquivo de entrada das palavras sem sua extensão:")
-    #wordsFileName = input()
-    wordsFileName = "Palavras_MatheusSabadin_GiuliaStefainski_EduardaWaechter"
-    automata.checkAcceptanceOfInputWords(wordsFileName)
+    if checkWords == "s":
+        print("\nDigite o nome do arquivo de entrada das palavras sem sua extensão:")
+        wordsFileName = input()
+        #wordsFileName = "palavras"
+        automata.checkAcceptanceOfInputWords(wordsFileName)
+
 
 def readTxtFile(name):
     with open(name + ".txt") as input:
@@ -114,65 +152,6 @@ class InputTranslation:                                     # Classe que traduz 
             transitions.append(transition.split(","))
 
         return transitions
-
-class FiniteAutomataNx:
-    def __init__(self, translatedInput):
-        self.graph = nx.DiGraph()
-
-        self.name = translatedInput.name
-        self.alphabet = translatedInput.alphabet
-        self.initialState = translatedInput.initialState
-        self.finalStates = set(translatedInput.finalStates)
-
-        self.createStateNodes(translatedInput)
-        self.states = self.graph.nodes()
-
-        self.createTransitions(translatedInput)
-        self.transitions = self.graph.edges()
-
-    
-    def createStateNodes(self, translatedInput):
-        for state in translatedInput.states:
-            self.graph.add_node(state, isInitialState=self.isStateInitial(state), isFinalState=self.isStateFinal(state))
-
-    def isStateInitial(self, state):
-        if self.initialState == state:
-            return True
-        
-        return False
-
-    def isStateFinal(self, state):
-        if state in self.finalStates:
-            return True
-        
-        return False
-
-    def createTransitions(self, translatedInput):
-        for transition in translatedInput.transitions:
-            self.graph.add_edge(transition[0], transition[2], label=transition[1])
-
-    def drawAutomata(self):
-        black = "#000000"
-        white = "#FFFFFF"
-        yellow = "#EADDCA"
-
-        position=nx.spring_layout(self.graph)
-        #Draws all the states
-        nodes = nx.draw_networkx_nodes(self.graph, pos=position, node_size=800, node_color=black)
-        nodes = nx.draw_networkx_nodes(self.graph, pos=position, node_size=700, node_color=yellow)
-
-        #Draws the inner circle in the last state
-        nodes = nx.draw_networkx_nodes(self.graph, pos=position, node_size=600, node_color=black, nodelist=list(self.finalStates))
-        nodes = nx.draw_networkx_nodes(self.graph, pos=position, node_size=500, node_color=yellow, nodelist=list(self.finalStates))
-
-        #Draws the inner circle in the first state
-        nodes = nx.draw_networkx_nodes(self.graph, pos=position, node_size=700, node_color=white, nodelist=[self.initialState])
-
-        edge_labels = nx.draw_networkx_edge_labels(self.graph, pos=position, verticalalignment="center")
-        arcs = nx.draw_networkx_edges(self.graph, pos=position, connectionstyle='arc3,rad=0.3', node_size=800)
-        labels = nx.draw_networkx_labels(self.graph, pos=position)
-
-        plt.show()
 
 class State:                                                # Classe de estado
     def __init__(self, name):
@@ -351,7 +330,8 @@ class FiniteAutomata:
         self.statesDictionary.pop(state.name)
 
         if state.isInitialState:
-            self.initialStateName = None
+            if self.initialStateName == state.name:
+                self.initialStateName = None
 
         if state.isFinalState:
             self.finalStateNames.remove(state.name)
@@ -430,6 +410,8 @@ class FiniteAutomata:
                 transitionData = [state.name, [], dummyState.name]
                 newTransition = Transition(transitionData, self.statesDictionary)
                 newTransition.acceptedSymbols.update(missingTransitionSymbols)
+                transitionKey = transitionData[0] + "To" + transitionData[2]
+                self.transitionsDictionary[transitionKey] = newTransition
 
     def getMissingSymbolsToTotalFunction(self):                             # Verifica os símbolos faltantes em cada estado para formar uma função total
         alphabetSet = set(self.alphabet)
@@ -452,50 +434,35 @@ class FiniteAutomata:
         return listOfTransitionsToCreate
     
 
-    #Unificação de estados equivalentes
-    def unifyEquivalentStates(self):
-        self.getEquivalentPairs()
-        pass
-
-    def getEquivalentPairs(self):                                           # Verifica quais são os pares equivalentes
-        pairsOfStates = self.createPairsToAnalyze()
-        combinations = []
-
-        for pairOfStates in pairsOfStates:
-            if self.areTwoStatesEquivalent(pairOfStates[0], pairOfStates[1]):
-                combinations.append(pairOfStates)
-
-        return combinations
-
-    def createPairsToAnalyze(self):                                         # Cria combinações com todos pares de autômatos
-        listOfStates = list(self.statesDictionary.values())
-        pairs = list(itertools.combinations(listOfStates, 2))
-        
-        return pairs
-
-    
-    
-    def getAllWordsBetweenTwoStates(self, initialState, finalStates):
-        pass
-    
-    def abuble(self):
+    #Verificação de estados equivalentes
+    def verifyEquivalenceBetweenPairs(self):
         finalStates = self.getFinalStates()
         nonFinalStates = self.getNonFinalStates()
         finalStatesPairs = list(itertools.combinations(finalStates, 2))
         nonFinalStatesPairs = list(itertools.combinations(nonFinalStates, 2))
 
-        equivalentFinalStatePairs = []
-        nonEquivalentFinalStatePairs = []
+        equivalentPairs = []
+        notEquivalentPairs = []
+        possiblyEquivalentFinalStatePairs = []
+        possiblyEquivalentNonFinalStatePairs = []
+
 
         for finalStatesPair in finalStatesPairs:
-            if self.areTwoStatesEquivalent(finalStatesPair[0], finalStatesPair[1], nonFinalStates, finalStates):
-                equivalentFinalStatePairs.append(finalStatesPair)
+            if self.areTwoStatesEquivalent(finalStatesPair[0], finalStatesPair[1], equivalentPairs, notEquivalentPairs):
+                possiblyEquivalentFinalStatePairs.append(finalStatesPair)
+
+        print("\nEstados finais com possível equivalência\n")
+        for possiblyEquivalentFinalStatePair in possiblyEquivalentFinalStatePairs:
+            print(possiblyEquivalentFinalStatePair[0].name + " -> " + possiblyEquivalentFinalStatePair[1].name)
+        
 
         for nonFinalStatesPair in nonFinalStatesPairs:
-            if self.areTwoStatesEquivalent(nonFinalStatesPair[0], nonFinalStatesPair[1], nonFinalStates, finalStates):
-                nonEquivalentFinalStatePairs.append(nonFinalStatesPair)
+            if self.areTwoStatesEquivalent(nonFinalStatesPair[0], nonFinalStatesPair[1], equivalentPairs, notEquivalentPairs):
+                possiblyEquivalentNonFinalStatePairs.append(nonFinalStatesPair)
 
-        pass
+        print("\nEstados não-finais com possível equivalência\n")
+        for possiblyEquivalentNonFinalStatePair in possiblyEquivalentNonFinalStatePairs:
+            print(possiblyEquivalentNonFinalStatePair[0].name + " -> " + possiblyEquivalentNonFinalStatePair[1].name)
 
     def getFinalStates(self):
         finalStates = []
@@ -512,7 +479,8 @@ class FiniteAutomata:
 
         return nonFinalStates
 
-    def areTwoStatesEquivalent(self, firstState, secondState, nonFinalStates, finalStates):              # Verifica se dois estados são equivalentes
+    def areTwoStatesEquivalent(self, firstState, secondState, equivalentPairs,notEquivalentPairs):              # Verifica se dois estados são equivalentes
+        isEndOfPath = False
         for firstStateTransition in firstState.transitionsPointingOut:
             for firstStateTransitionSymbol in firstStateTransition.acceptedSymbols:
                 for secondStateTransition in secondState.transitionsPointingOut:
@@ -521,15 +489,84 @@ class FiniteAutomata:
                             statePointedByFirstTransition = firstStateTransition.pointsTo
                             statePointedBySecondTransition = secondStateTransition.pointsTo
 
-                            if not ((statePointedByFirstTransition in nonFinalStates) and (statePointedBySecondTransition in nonFinalStates)) or ((statePointedByFirstTransition in finalStates) and (statePointedBySecondTransition in finalStates)):
-                                return False
+                            if statePointedByFirstTransition.isFinalState or statePointedBySecondTransition.isFinalState:
+                                isEndOfPath = True
 
+                            if statePointedByFirstTransition.isFinalState != statePointedBySecondTransition.isFinalState:
+                                if isEndOfPath:
+                                    notEquivalentPairs.append([firstStateTransition.pointsFrom, secondStateTransition.pointsFrom])
+
+                                return False
+        if isEndOfPath:
+            equivalentPairs.append([firstStateTransition.pointsFrom, secondStateTransition.pointsFrom])
         return True
 
 
+    #Unifica dois estados 
+    def unifyTwoStates(self, firstState, secondState):
+        unifiedStateName = firstState.name + secondState.name
+        unifiedState = State(unifiedStateName)
 
+        if firstState.isInitialState or secondState.isInitialState:
+            unifiedState.isInitialState = True
+            self.initialStateName = unifiedState.name
         
+        if firstState.isFinalState or secondState.isInitialState:
+            unifiedState.isFinalState = True
+            self.finalStateNames.append(unifiedState.name)
+
+        self.statesDictionary[unifiedState.name] = unifiedState
+        self.statesNames.append(unifiedState.name)
+
+        self.unifyAllTransitionsPointingInForTwoStates(firstState, secondState, unifiedState)
+        self.unifyAllTransitionsPointingOutForTwoStates(firstState, secondState, unifiedState)
+        self.deleteStateByName(firstState.name)
+        self.deleteStateByName(secondState.name)
+
+    def unifyAllTransitionsPointingInForTwoStates(self, firstState, secondState, unifiedState):     # Junta todas transições que estão apontando para o estado unificado
+        allTransitionsPointingIn = self.concatenateTransitionsOfTwoStates(firstState.transitionsPointingIn, secondState.transitionsPointingIn)
         
+        transitionsDataToCreate = []
+        for transition in allTransitionsPointingIn:
+            newTransitionData = [transition.pointsFrom.name, transition.acceptedSymbols, unifiedState.name]
+            transitionsDataToCreate.append(newTransitionData)
+
+        for transitionData in transitionsDataToCreate:
+            transitionKey = transitionData[0] + "To" + transitionData[2]
+
+            if not transitionKey in self.transitionsDictionary:
+                newTransition = Transition(transitionData, self.statesDictionary)
+                self.transitionsDictionary[transitionKey] = newTransition
+
+            self.transitionsDictionary[transitionKey].acceptedSymbols.update(transitionData[1])
+    
+    def unifyAllTransitionsPointingOutForTwoStates(self, firstState, secondState, unifiedState):    # Junta todas transições que estão apontando a partir do estado unificado
+        allTransitionsPointingOut = self.concatenateTransitionsOfTwoStates(firstState.transitionsPointingOut, secondState.transitionsPointingOut)
+        
+        transitionsDataToCreate = []
+        for transition in allTransitionsPointingOut:
+            newTransitionData = [unifiedState.name, transition.acceptedSymbols, transition.pointsTo.name]
+            transitionsDataToCreate.append(newTransitionData)
+
+        for transitionData in transitionsDataToCreate:
+            transitionKey = transitionData[0] + "To" + transitionData[2]
+
+            if not transitionKey in self.transitionsDictionary:
+                newTransition = Transition(transitionData, self.statesDictionary)
+                self.transitionsDictionary[transitionKey] = newTransition
+
+            self.transitionsDictionary[transitionKey].acceptedSymbols.update(transitionData[1])
+
+    def concatenateTransitionsOfTwoStates(self, firstStateTransitions, secondStateTransitions):     # Junta todas transições de dois estados
+        joinedTransitions = []
+
+        for firstStateTransition in firstStateTransitions:
+            joinedTransitions.append(firstStateTransition)
+
+        for secondStateTransition in secondStateTransitions:
+            joinedTransitions.append(secondStateTransition)
+        
+        return joinedTransitions
 
 
     #Verifica um input de palavras
