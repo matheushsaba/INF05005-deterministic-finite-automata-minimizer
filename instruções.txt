@@ -1,4 +1,24 @@
 > O usuário deve ter python 3.10.5 no computador, bem como o pacote GraphViz, encontrado em https://graphviz.org/download/
-> Qualquer input deve ser colocado no arquivo Entradas_Formatadas_MatheusSabadin_GiuliaStefainski_EduardaWaechter.txt
+> Qualquer input deve ser colocado num arquivo txt que deverá conter um autômato com a formatação adequada 
 > Para rodar o programa, basta clicar duas vezes no executável
-> Como output, serão geradas imagens do autômato
+> O executável possui um menu onde o usuário pode:
+1) inserir o nome do arquivo de entrada
+2) verifica se a linguagem reconhecida pelo autômato é vazia
+3) escolher se quer retirar estados inúteis
+4) escolher se quer criar uma função total no autômato
+5) escolher se quer gerar os estados equivalentes do autômato (não foi completamente implementada)
+6) escolher se quer juntar dois estados do autômato
+7) escolher se quer retirar estados inúteis novamente
+8) escolher se quer ler um arquivo .txt com palavras para teste
+
+> Como output, são geradas imagens do autômato e as palavras que este reconhece
+
+
+
+Caso se queira rodar o programa no Visual Studio Code se recomenda:
+> Ter a extensão de python instalada no VSCode, bem como as outras recomendações citadas anteriormente
+> Abrir o projeto e selecionar o compilador da versão do python instalada
+> Criar um ambiente virtual digitando no terminal: python venv venv
+> Abrir o terminal do ambiente virtual clicando em Terminal>New Terminal
+> Carregar todas as bibliotecas necessárias digitando pip install -r requirements.txt
+> Rodar o script apertando F5

@@ -24,6 +24,7 @@ def main():
     #=========================================================
     if automata.isLanguageEmpty():
         print("A linguagem fornecida é vazia\n")
+        q = input()
         return
     
     print("A linguagem fornecida não é vazia\n")
@@ -77,7 +78,9 @@ def main():
         wordsFileName = input()
         #wordsFileName = "palavras"
         automata.checkAcceptanceOfInputWords(wordsFileName)
-
+    #=========================================================
+    #Pausar o console para ver o output
+    q = input()
 
 def readTxtFile(name):
     with open(name + ".txt") as input:
